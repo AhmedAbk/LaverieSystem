@@ -9,7 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Laverie.Domain\Laverie.Domain.csproj" />
-    <ProjectReference Include="..\Laverie.Infrastructure\Laverie.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Laverie.Domain">
+      <HintPath>..\Laverie.Domain\bin\Debug\net8.0\Laverie.Domain.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
