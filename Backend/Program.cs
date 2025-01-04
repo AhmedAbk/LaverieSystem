@@ -17,7 +17,7 @@ builder.Services.AddScoped<AppDbContext>();
 builder.Services.AddScoped<ConfigurationRepo>();
 builder.Services.AddScoped<ConfigurationService>();
 
-// Add CORS policy to allow requests from the React app
+// appply cors link
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", builder =>
