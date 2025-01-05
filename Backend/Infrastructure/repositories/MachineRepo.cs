@@ -1,10 +1,10 @@
 ﻿using Laverie.API.Infrastructure.context;
+using Laverie.Domain.DTOS;
 using Laverie.Domain.Entities;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace Laverie.API.Infrastructure.repositories
 {
@@ -18,103 +18,134 @@ namespace Laverie.API.Infrastructure.repositories
         }
 
         // Get all machines
-        public async Task<List<Machine>> GetAllMachinesAsync()
+        public List<Machine> GetAll()
         {
             var machines = new List<Machine>();
-
-            using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
-                await connection.OpenAsync();
-                var command = new MySqlCommand("SELECT * FROM Machines", (MySqlConnection)connection);
-
-                using (var reader = await command.ExecuteReaderAsync())
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM machine", conn);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
                 {
-                    while (await reader.ReadAsync())
+                    machines.Add(new Machine
                     {
-                        var machine = new Machine
-                        {
-                            id = reader.GetInt32(reader.GetOrdinal("id")),
-                            status = reader.GetBoolean(reader.GetOrdinal("status")),
-                            type = reader.GetString(reader.GetOrdinal("type"))
-                        };
-                        machines.Add(machine);
-                    }
+                        id = reader.GetInt32("id"),
+                        status = reader.GetBoolean("status"),
+                        type = reader.GetString("type")
+                    });
                 }
             }
             return machines;
         }
 
-        // Get machine by ID
-        public async Task<Machine> GetMachineByIdAsync(int id)
+        // Get machine by Id
+        public Machine GetById(int id)
         {
             Machine machine = null;
-
-            using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
-                await connection.OpenAsync();
-                var command = new MySqlCommand("SELECT * FROM Machines WHERE id = @id", (MySqlConnection)connection);
-                command.Parameters.AddWithValue("@id", id);
-
-                using (var reader = await command.ExecuteReaderAsync())
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM machine WHERE id = @id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
                 {
-                    if (await reader.ReadAsync())
+                    machine = new Machine
                     {
-                        machine = new Machine
-                        {
-                            id = reader.GetInt32(reader.GetOrdinal("id")),
-                            status = reader.GetBoolean(reader.GetOrdinal("status")),
-                            type = reader.GetString(reader.GetOrdinal("type"))
-                        };
-                    }
+                        id = reader.GetInt32("id"),
+                        status = reader.GetBoolean("status"),
+                        type = reader.GetString("type")
+                    };
                 }
             }
             return machine;
         }
 
         // Add a new machine
-        public async Task<Machine> AddMachineAsync(Machine machine)
+        public bool Create(MachineCreationDTO machine)
         {
-            using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+            try
             {
-                await connection.OpenAsync();
-                var command = new MySqlCommand("INSERT INTO Machines (status, type) VALUES (@status, @type)", (MySqlConnection)connection);
-                command.Parameters.AddWithValue("@status", machine.status);
-                command.Parameters.AddWithValue("@type", machine.type);
+                using (var conn = (MySqlConnection)_dbContext.CreateConnection())
+                {
+                    conn.Open();
 
-                await command.ExecuteNonQueryAsync();
+                    // Insert query with parameters
+                    MySqlCommand cmd = new MySqlCommand(
+                        "INSERT INTO machine (status, type, LaverieId) " +
+                        "VALUES (@status, @type, @LaverieId)", conn);
 
-                // Optionally, retrieve the last inserted ID if you need it
-                machine.id = (int)command.LastInsertedId;
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@status", machine.status);
+                    cmd.Parameters.AddWithValue("@type", machine.type);
+                    cmd.Parameters.AddWithValue("@LaverieId", machine.LaverieId);
+
+                    // Execute query and check rows affected
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
             }
-            return machine;
+            catch (Exception ex)
+            {
+                // Error logging (you may want to log this to a file or external service)
+                throw new Exception($"An error occurred while creating the machine: {ex.Message}", ex);
+            }
         }
 
-        // Update machine details
-        public async Task<bool> UpdateMachineAsync(Machine machine)
+        // Update an existing machine
+        public bool Update(MachineUpdateDTO machine, int id)
         {
-            using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
-                await connection.OpenAsync();
-                var command = new MySqlCommand("UPDATE Machines SET status = @status, type = @type WHERE id = @id", (MySqlConnection)connection);
-                command.Parameters.AddWithValue("@status", machine.status);
-                command.Parameters.AddWithValue("@type", machine.type);
-                command.Parameters.AddWithValue("@id", machine.id);
+                conn.Open();
 
-                var rowsAffected = await command.ExecuteNonQueryAsync();
+                // Check if machine exists before updating
+                MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM machine WHERE id = @id", conn);
+                checkCmd.Parameters.AddWithValue("@id", id);
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count == 0)
+                {
+                    return false; 
+                }
+
+                
+                MySqlCommand cmd = new MySqlCommand(
+                    "UPDATE machine SET status = @status, type = @type WHERE id = @id", conn);
+
+                
+                cmd.Parameters.AddWithValue("@status", machine.status);
+                cmd.Parameters.AddWithValue("@type", machine.type);
+                cmd.Parameters.AddWithValue("@id", id);
+
+                int rowsAffected = cmd.ExecuteNonQuery();
                 return rowsAffected > 0;
             }
         }
 
-        // Delete machine
-        public async Task<bool> DeleteMachineAsync(int id)
+        // Delete a machine
+        public bool Delete(int id)
         {
-            using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
-                await connection.OpenAsync();
-                var command = new MySqlCommand("DELETE FROM Machines WHERE id = @id", (MySqlConnection)connection);
-                command.Parameters.AddWithValue("@id", id);
+                conn.Open();
 
-                var rowsAffected = await command.ExecuteNonQueryAsync();
+                // Check if the machine exists before deleting
+                MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM machine WHERE id = @id", conn);
+                checkCmd.Parameters.AddWithValue("@id", id);
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count == 0)
+                {
+                    return false; // Machine doesn't exist
+                }
+
+                // Proceed with deletion
+                MySqlCommand cmd = new MySqlCommand("DELETE FROM machine WHERE id = @id", conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                int rowsAffected = cmd.ExecuteNonQuery();
+
                 return rowsAffected > 0;
             }
         }
