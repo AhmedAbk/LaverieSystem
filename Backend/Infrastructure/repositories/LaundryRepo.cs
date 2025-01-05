@@ -3,6 +3,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using Laverie.Domain.Entities;
 using Laverie.API.Infrastructure.context;
+using Laverie.Domain.DTOS;
 
 namespace Laverie.API.Infrastructure.repositories
 {
@@ -66,51 +67,106 @@ namespace Laverie.API.Infrastructure.repositories
             return laundry;
         }
 
-        // Create a new laundry
-        public void Create(Laundry laundry)
+        public bool Create(LaundryCreationDTO laundry)
         {
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection())
+            try
             {
-                conn.Open();
-                MySqlCommand cmd = new MySqlCommand(
-                    "INSERT INTO laverie (NomLaverie, Address, Latitude, Longitude, Services) VALUES (@NomLaverie, @Address, @Latitude, @Longitude, @Services)", conn);
-                cmd.Parameters.AddWithValue("@NomLaverie", laundry.nomLaverie);
-                cmd.Parameters.AddWithValue("@Address", laundry.address);
-                cmd.Parameters.AddWithValue("@Latitude", laundry.Latitude);
-                cmd.Parameters.AddWithValue("@Longitude", laundry.Longitude);
-                cmd.Parameters.AddWithValue("@Services", string.Join(",", laundry.Services));
-                cmd.ExecuteNonQuery();
+                using (var conn = (MySqlConnection)_dbContext.CreateConnection())
+                {
+                    conn.Open();
+
+                    // Insert query with parameters
+                    MySqlCommand cmd = new MySqlCommand(
+                        " INSERT INTO laverie " +
+                        " (NomLaverie, Address, Latitude, ProprietaireId," +
+                        " Longitude, Services) " +
+                        " VALUES (@NomLaverie, @Address, @Latitude, @ProprietaireId," +
+                        " @Longitude, @Services)", conn);
+
+                    // Add parameters
+                    cmd.Parameters.AddWithValue("@NomLaverie", laundry.nomLaverie);
+                    cmd.Parameters.AddWithValue("@Address", laundry.address);
+                    cmd.Parameters.AddWithValue("@Latitude", laundry.Latitude);
+                    cmd.Parameters.AddWithValue("@ProprietaireId", laundry.ProprietaireId);
+                    cmd.Parameters.AddWithValue("@Longitude", laundry.Longitude);
+                    cmd.Parameters.AddWithValue("@Services", string.Join(",", laundry.Services));
+
+                    // Execute query and return the number of rows affected
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0 ;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Error logging (you may want to log this to a file or external service)
+                throw new Exception($"An error occurred while creating the laundry: {ex.Message}", ex);
             }
         }
+
+
+
 
         // Update an existing laundry
-        public void Update(Laundry laundry)
+        public bool Update(LaundryUpdateDTO laundry, int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
+
+                // Check if laundry exists before updating
+                MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
+                checkCmd.Parameters.AddWithValue("@Id", id);
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count == 0)
+                {
+                    return false; // Laundry doesn't exist
+                }
+
+                // Proceed with the update
                 MySqlCommand cmd = new MySqlCommand(
-                    "UPDATE laverie SET NomLaverie = @NomLaverie, Address = @Address, Latitude = @Latitude, Longitude = @Longitude, Services = @Services WHERE Id = @Id", conn);
-                cmd.Parameters.AddWithValue("@Id", laundry.id);
+                    "UPDATE laverie SET NomLaverie = @NomLaverie, Address = @Address," +
+                    " Latitude = @Latitude, Longitude = @Longitude, Services = @Services " +
+                    "WHERE Id = @Id", conn);
+
+                cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@NomLaverie", laundry.nomLaverie);
                 cmd.Parameters.AddWithValue("@Address", laundry.address);
                 cmd.Parameters.AddWithValue("@Latitude", laundry.Latitude);
                 cmd.Parameters.AddWithValue("@Longitude", laundry.Longitude);
                 cmd.Parameters.AddWithValue("@Services", string.Join(",", laundry.Services));
-                cmd.ExecuteNonQuery();
+
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
             }
         }
 
+
         // Delete a laundry
-        public void Delete(int id)
+        public bool Delete(int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("DELETE FROM Laundry WHERE Id = @Id", conn);
+
+                // Check if the laundry exists before deleting
+                MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
+                checkCmd.Parameters.AddWithValue("@Id", id);
+                int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if (count == 0)
+                {
+                    return false; // Laundry doesn't exist
+                }
+
+                // Proceed with deletion
+                MySqlCommand cmd = new MySqlCommand("DELETE FROM laverie WHERE Id = @Id", conn);
                 cmd.Parameters.AddWithValue("@Id", id);
-                cmd.ExecuteNonQuery();
+                int rowsAffected = cmd.ExecuteNonQuery();
+
+                return rowsAffected > 0;
             }
         }
+
     }
 }
