@@ -1,4 +1,5 @@
 using Laverie.API.Infrastructure.context;
+using Laverie.API.Infrastructure.repositories;
 using Laverie.API.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,8 +15,23 @@ builder.Services.AddSwaggerGen();
 
 // Add the database context and services
 builder.Services.AddScoped<AppDbContext>();
+
+//Configs
 builder.Services.AddScoped<ConfigurationRepo>();
 builder.Services.AddScoped<ConfigurationService>();
+
+//user
+builder.Services.AddScoped<UserRepo>();
+builder.Services.AddScoped<UserService>();
+
+//laundry
+builder.Services.AddScoped<LaundryRepo>();
+builder.Services.AddScoped<LaundryService>();
+
+//Machine
+builder.Services.AddScoped<MachineRepo>();
+builder.Services.AddScoped<MachineService>();
+
 
 // appply cors link
 builder.Services.AddCors(options =>
