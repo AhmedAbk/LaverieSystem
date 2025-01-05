@@ -1,86 +1,132 @@
-﻿using Laverie.API.Services;
+﻿using Laverie.API.Infrastructure.repositories;
+using Laverie.Domain.DTOS;
 using Laverie.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace Laverie.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class MachineController : ControllerBase
     {
-        private readonly MachineService _machineService;
+        private readonly MachineRepo _machineRepo;
 
-        // Inject MachineService into the controller
-        public MachineController(MachineService machineService)
+        public MachineController(MachineRepo machineRepo)
         {
-            _machineService = machineService;
+            _machineRepo = machineRepo;
         }
 
-        // GET: api/Machine
+        // GET: api/machine
         [HttpGet]
-        public async Task<ActionResult<List<Machine>>> GetAllMachines()
+        public IActionResult GetAll()
         {
-            var machines = await _machineService.GetAllMachinesAsync();
-            if (machines == null || machines.Count == 0)
+            try
             {
-                return NotFound(); // Return 404 if no machines are found
+                var machines = _machineRepo.GetAll();
+                if (machines == null || machines.Count == 0)
+                {
+                    return NotFound(new { message = "No machines found." });
+                }
+                return Ok(new { message = "Machines retrieved successfully! 🎉", data = machines });
             }
-            return Ok(machines); // Return the list of machines
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the machines.", error = ex.Message });
+            }
         }
 
-        // GET: api/Machine/5
+        // GET: api/machine/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Machine>> GetMachine(int id)
+        public IActionResult GetById(int id)
         {
-            var machine = await _machineService.GetMachineByIdAsync(id);
-            if (machine == null)
+            try
             {
-                return NotFound(); // Return 404 if machine not found
+                var machine = _machineRepo.GetById(id);
+                if (machine == null)
+                {
+                    return NotFound(new { message = $"Machine with ID {id} not found." });
+                }
+                return Ok(new { message = "Machine retrieved successfully! 🎉", data = machine });
             }
-            return Ok(machine); // Return the machine details
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the machine.", error = ex.Message });
+            }
         }
 
-        // POST: api/Machine
-        [HttpPost]
-        public async Task<ActionResult<Machine>> CreateMachine([FromBody] Machine machine)
+        // POST: api/machine
+        [HttpPost("create")]
+        public IActionResult Create([FromBody] MachineCreationDTO machine)
         {
-            if (machine == null)
+            try
             {
-                return BadRequest("Machine data is invalid."); // Handle bad request if no data
-            }
+                if (machine == null)
+                {
+                    return BadRequest(new { message = "Invalid machine data." });
+                }
 
-            var createdMachine = await _machineService.AddMachineAsync(machine);
-            return CreatedAtAction(nameof(GetMachine), new { id = createdMachine.id }, createdMachine); // Return 201 Created with machine details
+                var isCreated = _machineRepo.Create(machine);
+                if (isCreated)
+                {
+                    return Ok(new { message = $"Machine of type '{machine.type}' created successfully! 🎉" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Failed to create the machine." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the machine.", error = ex.Message });
+            }
         }
 
-        // PUT: api/Machine/5
+        // PUT: api/machine/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMachine(int id, [FromBody] Machine machine)
+        public IActionResult Update(int id, [FromBody] MachineUpdateDTO machine)
         {
-            if (id != machine.id)
+            try
             {
-                return BadRequest("Machine ID mismatch.");
-            }
+              
 
-            var updated = await _machineService.UpdateMachineAsync(machine);
-            if (!updated)
-            {
-                return NotFound(); // Return 404 if machine to update is not found
+                bool isUpdated = _machineRepo.Update(machine, id);
+                if (isUpdated)
+                {
+                    return Ok(new { message = $"Machine with ID {id} updated successfully! 🎉" });
+                }
+                else
+                {
+                    return NotFound(new { message = $"Machine with ID {id} not found." });
+                }
             }
-            return NoContent(); // Return 204 No Content on success
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the machine.", error = ex.Message });
+            }
         }
 
-        // DELETE: api/Machine/5
+        // DELETE: api/machine/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMachine(int id)
+        public IActionResult Delete(int id)
         {
-            var deleted = await _machineService.DeleteMachineAsync(id);
-            if (!deleted)
+            try
             {
-                return NotFound(); // Return 404 if machine to delete is not found
+                var isDeleted = _machineRepo.Delete(id);
+                if (isDeleted)
+                {
+                    return Ok(new { message = $"Machine with ID {id} deleted successfully! 🗑️" });
+                }
+                else
+                {
+                    return NotFound(new { message = $"Machine with ID {id} not found." });
+                }
             }
-            return NoContent(); // Return 204 No Content on success
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the machine.", error = ex.Message });
+            }
         }
     }
 }

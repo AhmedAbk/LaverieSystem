@@ -1,4 +1,5 @@
 ﻿using Laverie.API.Infrastructure.repositories;
+using Laverie.Domain.DTOS;
 using Laverie.Domain.Entities;
 
 namespace Laverie.API.Services
@@ -13,33 +14,33 @@ namespace Laverie.API.Services
         }
 
         // Get all machines
-        public async Task<List<Machine>> GetAllMachinesAsync()
+        public  List<Machine> GetAllMachinesAsync()
         {
-            return await _machineRepo.GetAllMachinesAsync();
+            return  _machineRepo.GetAll();
         }
 
         // Get machine by ID
-        public async Task<Machine> GetMachineByIdAsync(int id)
+        public  Machine GetMachineByIdAsync(int id)
         {
-            return await _machineRepo.GetMachineByIdAsync(id);
+            return  _machineRepo.GetById(id);
         }
 
         // Add a new machine
-        public async Task<Machine> AddMachineAsync(Machine machine)
+        public bool AddMachineAsync(MachineCreationDTO machine)
         {
-            return await _machineRepo.AddMachineAsync(machine);
+            return  _machineRepo.Create(machine);
         }
 
         // Update machine details
-        public async Task<bool> UpdateMachineAsync(Machine machine)
+        public bool UpdateMachineAsync(MachineUpdateDTO machine, int id)
         {
-            return await _machineRepo.UpdateMachineAsync(machine);
+            return  _machineRepo.Update(machine, id);
         }
 
         // Delete machine
-        public async Task<bool> DeleteMachineAsync(int id)
+        public bool DeleteMachineAsync(int id)
         {
-            return await _machineRepo.DeleteMachineAsync(id);
+            return  _machineRepo.Delete(id);
         }
     }
 }
