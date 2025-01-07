@@ -54,14 +54,11 @@ namespace Laverie.SimulationApp.Services
         public async Task<bool> StartMachineStateAsync(int machineId, int idCycle)
         {
             try
-            {
-                // Construct the URL to call the backend API
+            { 
                 string url = $"api/Configuration/startMachine";
-
-                // Prepare the request body
+                 
                 var requestBody = new { MachineId = machineId, IdCycle = idCycle };
-
-                // Send a POST request to start the machine
+                 
                 var response = await _httpClient.PostAsJsonAsync(url, requestBody);
 
                 if (response.IsSuccessStatusCode)
@@ -87,11 +84,9 @@ namespace Laverie.SimulationApp.Services
         public async Task<bool> StopMachineStateAsync(int machineId)
         {
             try
-            {
-                // Construct the URL to call the backend API
+            { 
                 string url = $"api/Configuration/stopMachine";
-
-                // Send a POST request to stop the machine
+                 
                 var response = await _httpClient.PostAsJsonAsync(url, machineId);
 
                 if (response.IsSuccessStatusCode)

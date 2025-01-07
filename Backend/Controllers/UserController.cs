@@ -1,7 +1,4 @@
-﻿
-
-// Controller
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Laverie.API.Services;
 using Laverie.Domain.Entities;
 using Laverie.Domain.DTOS;

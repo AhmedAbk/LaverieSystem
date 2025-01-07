@@ -22,7 +22,7 @@ namespace Laverie.API.Infrastructure.repositories
         public List<User> GetAll()
         {
             var proprietaires = new List<User>();
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) // Use CreateConnection here
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())  
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand("SELECT * FROM Proprietaire", conn);
@@ -45,7 +45,7 @@ namespace Laverie.API.Infrastructure.repositories
         public User GetById(int id)
         {
             User proprietaire = null;
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) // Use CreateConnection here
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) 
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand("SELECT * FROM Proprietaire WHERE Id = @Id", conn);
@@ -68,7 +68,7 @@ namespace Laverie.API.Infrastructure.repositories
 
         public void Create(UserCreationDTO proprietaire)
         {
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) // Use CreateConnection here
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())  
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(
@@ -83,9 +83,8 @@ namespace Laverie.API.Infrastructure.repositories
                     cmd.ExecuteNonQuery();
                 }
                 catch (MySqlException ex)
-                {
-                    // Handle duplicate entry error or other database exceptions
-                    if (ex.Number == 1062) // Duplicate entry error code
+                { 
+                    if (ex.Number == 1062)  
                     {
                         throw new Exception("Email already exists.");
                     }
@@ -96,7 +95,7 @@ namespace Laverie.API.Infrastructure.repositories
 
         public void Update(UserCreationDTO proprietaire, int id)
         {
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) // Use CreateConnection here
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())   
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(
@@ -117,15 +116,14 @@ namespace Laverie.API.Infrastructure.repositories
 
         public bool Delete(int id)
         {
-            using (var conn = (MySqlConnection)_dbContext.CreateConnection()) // Use CreateConnection here
+            using (var conn = (MySqlConnection)_dbContext.CreateConnection())  
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM Proprietaire WHERE Id = @Id", conn);
                 cmd.Parameters.AddWithValue("@Id", id);
 
                 int rowsAffected = cmd.ExecuteNonQuery();
-
-                // Return true if a row was deleted, false otherwise
+                 
                 return rowsAffected > 0;
             }
         }
@@ -157,7 +155,7 @@ namespace Laverie.API.Infrastructure.repositories
                 }
             }
 
-            return null; // Return null if no match is found
+            return null; 
         }
 
     }

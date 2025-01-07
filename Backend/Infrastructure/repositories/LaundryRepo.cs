@@ -15,8 +15,7 @@ namespace Laverie.API.Infrastructure.repositories
         {
             _dbContext = dbContext;
         }
-
-        // Get all laundries
+         
         public List<Laundry> GetAll()
         {
             var laundries = new List<Laundry>();
@@ -40,8 +39,7 @@ namespace Laverie.API.Infrastructure.repositories
             }
             return laundries;
         }
-
-        // Get laundry by Id
+         
         public Laundry GetById(int id)
         {
             Laundry laundry = null;
@@ -74,56 +72,46 @@ namespace Laverie.API.Infrastructure.repositories
                 using (var conn = (MySqlConnection)_dbContext.CreateConnection())
                 {
                     conn.Open();
-
-                    // Insert query with parameters
+                     
                     MySqlCommand cmd = new MySqlCommand(
                         " INSERT INTO laverie " +
                         " (NomLaverie, Address, Latitude, ProprietaireId," +
                         " Longitude, Services) " +
                         " VALUES (@NomLaverie, @Address, @Latitude, @ProprietaireId," +
                         " @Longitude, @Services)", conn);
-
-                    // Add parameters
+                     
                     cmd.Parameters.AddWithValue("@NomLaverie", laundry.nomLaverie);
                     cmd.Parameters.AddWithValue("@Address", laundry.address);
                     cmd.Parameters.AddWithValue("@Latitude", laundry.Latitude);
                     cmd.Parameters.AddWithValue("@ProprietaireId", laundry.ProprietaireId);
                     cmd.Parameters.AddWithValue("@Longitude", laundry.Longitude);
                     cmd.Parameters.AddWithValue("@Services", string.Join(",", laundry.Services));
-
-                    // Execute query and return the number of rows affected
+                     
                     int rowsAffected = cmd.ExecuteNonQuery();
                     return rowsAffected > 0 ;
                 }
             }
             catch (Exception ex)
-            {
-                // Error logging (you may want to log this to a file or external service)
+            { 
                 throw new Exception($"An error occurred while creating the laundry: {ex.Message}", ex);
             }
         }
-
-
-
-
-        // Update an existing laundry
+         
         public bool Update(LaundryUpdateDTO laundry, int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-
-                // Check if laundry exists before updating
+                 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
                 checkCmd.Parameters.AddWithValue("@Id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (count == 0)
                 {
-                    return false; // Laundry doesn't exist
+                    return false;  
                 }
-
-                // Proceed with the update
+                 
                 MySqlCommand cmd = new MySqlCommand(
                     "UPDATE laverie SET NomLaverie = @NomLaverie, Address = @Address," +
                     " Latitude = @Latitude, Longitude = @Longitude, Services = @Services " +
@@ -140,26 +128,22 @@ namespace Laverie.API.Infrastructure.repositories
                 return rowsAffected > 0;
             }
         }
-
-
-        // Delete a laundry
+         
         public bool Delete(int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-
-                // Check if the laundry exists before deleting
+                 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
                 checkCmd.Parameters.AddWithValue("@Id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (count == 0)
                 {
-                    return false; // Laundry doesn't exist
+                    return false;  
                 }
-
-                // Proceed with deletion
+                 
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM laverie WHERE Id = @Id", conn);
                 cmd.Parameters.AddWithValue("@Id", id);
                 int rowsAffected = cmd.ExecuteNonQuery();

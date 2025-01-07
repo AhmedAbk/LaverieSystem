@@ -34,8 +34,7 @@ namespace Laverie.API.Controllers
         public IActionResult Create([FromBody] LaundryCreationDTO laundry)
         {
             try
-            {
-                // Call AddLaundry service and get the rows affected
+            { 
                 bool rowsAffected = _laundryService.AddLaundry(laundry);
 
 
@@ -72,7 +71,7 @@ namespace Laverie.API.Controllers
 
             if (result)
             {
-                return Ok($"Laundry '{laundry.nomLaverie}' updated successfully! 🎉");
+                return Ok($"Laundry '{laundry.nomLaverie}' updated successfully");
             }
             else
             {
@@ -84,17 +83,16 @@ namespace Laverie.API.Controllers
 
         [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
-        {
-            // Attempt to delete the laundry
+        { 
             bool result = _laundryService.DeleteLaundry(id);
 
             if (result)
             {
-                return Ok($" Laundry with ID {id} deleted successfully! 🗑️");
+                return Ok($" Laundry with ID {id} deleted successfully!");
             }
             else
             {
-                return NotFound($"⚠ Laundry with ID {id} not found. Please verify the ID and try again.");
+                return NotFound($" Laundry with ID {id} not found. Please verify the ID and try again.");
             }
         }
 

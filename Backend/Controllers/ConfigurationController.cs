@@ -17,8 +17,7 @@ namespace Laverie.API.Controllers
         {
             _configurationService = configurationService;
         }
-
-        // GET: api/configuration
+         
         [HttpGet]
         public async Task<ActionResult<List<User>>> GetConfiguration()
         {

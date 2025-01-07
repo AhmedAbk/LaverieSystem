@@ -164,7 +164,7 @@ public class ConfigurationRepo
         {
             await connection.OpenAsync();
 
-            using (var transaction = await connection.BeginTransactionAsync()) // Start transaction
+            using (var transaction = await connection.BeginTransactionAsync()) 
             {
                 try
                 {
@@ -196,18 +196,18 @@ public class ConfigurationRepo
 
                                 if (actionRowsAffected > 0)
                                 {
-                                    await transaction.CommitAsync(); // Commit the transaction
+                                    await transaction.CommitAsync(); 
                                     return true;
                                 }
                             }
                         }
-                        await transaction.RollbackAsync(); // Rollback if something goes wrong
+                        await transaction.RollbackAsync(); 
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync(); // Rollback if exception
+                    await transaction.RollbackAsync(); 
                     throw new Exception("Error starting machine: " + ex.Message);
                 }
             }
@@ -220,7 +220,7 @@ public class ConfigurationRepo
         {
             await connection.OpenAsync();
 
-            using (var transaction = await connection.BeginTransactionAsync()) // Start transaction
+            using (var transaction = await connection.BeginTransactionAsync()) 
             {
                 try
                 {
@@ -238,16 +238,16 @@ public class ConfigurationRepo
 
                         if (rowsAffected > 0)
                         {
-                            await transaction.CommitAsync(); // Commit the transaction
+                            await transaction.CommitAsync(); 
                             return true;
                         }
-                        await transaction.RollbackAsync(); // Rollback if something goes wrong
+                        await transaction.RollbackAsync(); 
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync(); // Rollback if exception
+                    await transaction.RollbackAsync(); 
                     throw new Exception("Error stopping machine: " + ex.Message);
                 }
             }
