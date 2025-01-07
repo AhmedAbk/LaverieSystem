@@ -18,7 +18,7 @@ namespace Laverie.API.Controllers
             _machineRepo = machineRepo;
         }
 
-        // GET: api/machine
+       
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -37,7 +37,7 @@ namespace Laverie.API.Controllers
             }
         }
 
-        // GET: api/machine/{id}
+     
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -56,7 +56,7 @@ namespace Laverie.API.Controllers
             }
         }
 
-        // POST: api/machine
+        
         [HttpPost("create")]
         public IActionResult Create([FromBody] MachineCreationDTO machine)
         {
@@ -83,7 +83,7 @@ namespace Laverie.API.Controllers
             }
         }
 
-        // PUT: api/machine/{id}
+        
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromBody] MachineUpdateDTO machine)
         {
@@ -107,7 +107,7 @@ namespace Laverie.API.Controllers
             }
         }
 
-        // DELETE: api/machine/{id}
+       
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

@@ -166,7 +166,7 @@ public class ConfigurationRepo
         {
             await connection.OpenAsync();
 
-            using (var transaction = await connection.BeginTransactionAsync()) // Start transaction
+            using (var transaction = await connection.BeginTransactionAsync()) 
             {
                 try
                 {
@@ -198,18 +198,18 @@ public class ConfigurationRepo
 
                                 if (actionRowsAffected > 0)
                                 {
-                                    await transaction.CommitAsync(); // Commit the transaction
+                                    await transaction.CommitAsync(); 
                                     return true;
                                 }
                             }
                         }
-                        await transaction.RollbackAsync(); // Rollback if something goes wrong
+                        await transaction.RollbackAsync(); 
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    await transaction.RollbackAsync(); // Rollback if exception
+                    await transaction.RollbackAsync(); 
                     throw new Exception("Error starting machine: " + ex.Message);
                 }
             }
@@ -264,11 +264,11 @@ public class ConfigurationRepo
             {
                 try
                 {
-                    // Insert the cycle
+                    
                     string insertCycleQuery = @"
                     INSERT INTO cycle (Price, MachineId, CycleDuration) 
                     VALUES (@Price, @MachineId, @CycleDuration);
-                    SELECT LAST_INSERT_ID();"; // This returns the last inserted ID
+                    SELECT LAST_INSERT_ID();"; 
 
                     using (var insertCycleCommand = new MySqlCommand(insertCycleQuery, connection, transaction))
                     {
@@ -276,23 +276,23 @@ public class ConfigurationRepo
                         insertCycleCommand.Parameters.AddWithValue("@MachineId", cycle.machineId);
                         insertCycleCommand.Parameters.AddWithValue("@CycleDuration", cycle.cycleDuration);
 
-                        // Execute the insert query and retrieve the last inserted ID
+                        
                         int cycleId = Convert.ToInt32(await insertCycleCommand.ExecuteScalarAsync());
 
                         if (cycleId > 0)
                         {
-                            await transaction.CommitAsync(); // Commit the transaction
-                            return cycleId; // Return the ID of the inserted cycle
+                            await transaction.CommitAsync();
+                            return cycleId;
                         }
 
-                        await transaction.RollbackAsync(); // Rollback if no rows were inserted
-                        return 0; // Return 0 if insertion failed
+                        await transaction.RollbackAsync(); 
+                        return 0; 
                     }
                 }
                 catch (Exception)
                 {
-                    await transaction.RollbackAsync(); // Rollback on exception
-                    throw; // Re-throw the exception to handle it upstream
+                    await transaction.RollbackAsync(); 
+                    throw;
                 }
             }
         }
