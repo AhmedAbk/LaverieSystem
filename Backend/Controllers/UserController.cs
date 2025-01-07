@@ -33,7 +33,7 @@ namespace Laverie.API.Controllers
             return Ok(proprietaire);
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public IActionResult Create([FromBody] UserCreationDTO proprietaire)
         {
             try
@@ -48,6 +48,7 @@ namespace Laverie.API.Controllers
                     data = new
                     {
                         Name = proprietaire.Name,
+                        Password = proprietaire.Password,
                         Email = proprietaire.Email,
                         Age = proprietaire.Age
                     }
@@ -64,7 +65,7 @@ namespace Laverie.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] UserCreationDTO proprietaire)
         {
             try
@@ -88,7 +89,7 @@ namespace Laverie.API.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
             try
@@ -144,8 +145,7 @@ namespace Laverie.API.Controllers
                     Message = "Login successful.",
                     Status = "Success",
                     User = new
-                    {
-                        
+                    { 
                         Password = result.password,
                         Email = result.email,
                         

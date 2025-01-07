@@ -84,7 +84,7 @@ namespace Laverie.API.Controllers
         }
 
         // PUT: api/machine/{id}
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] MachineUpdateDTO machine)
         {
             try
@@ -108,7 +108,7 @@ namespace Laverie.API.Controllers
         }
 
         // DELETE: api/machine/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
             try

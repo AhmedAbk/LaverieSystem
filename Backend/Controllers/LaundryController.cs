@@ -62,7 +62,7 @@ namespace Laverie.API.Controllers
         }
 
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] LaundryUpdateDTO laundry)
         {
             
@@ -82,7 +82,7 @@ namespace Laverie.API.Controllers
 
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public IActionResult Delete(int id)
         {
             // Attempt to delete the laundry
