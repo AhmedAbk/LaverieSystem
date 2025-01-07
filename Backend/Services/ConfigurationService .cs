@@ -1,4 +1,5 @@
-﻿using Laverie.Domain.Entities;
+﻿using Laverie.Domain.DTOS;
+using Laverie.Domain.Entities;
 using Laverie.Domain.Interface;
 
 namespace Laverie.API.Services
@@ -21,13 +22,17 @@ namespace Laverie.API.Services
         {
             return await _configurationRepo.StartMachine(MachineId, IdCycle);
         }
+
         public async Task<bool> stopeMachineAsync(int MachineId)
         {
             return await _configurationRepo.StopMachine(MachineId);
         }
 
 
-
+        public async Task<int> AddCycle(CycleCreationDTO newCycle)
+        {
+            return await _configurationRepo.AddCycleAsync(newCycle);
+        }
 
     }
 }

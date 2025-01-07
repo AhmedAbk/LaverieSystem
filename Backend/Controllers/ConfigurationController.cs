@@ -44,6 +44,7 @@ namespace Laverie.API.Controllers
             return Ok(new { Message = "Machine status toggled successfully." });
         }
 
+
         [HttpPost("stopMachine")]
         public async Task<IActionResult> StopMachine([FromBody] int machineId)
         {
@@ -58,5 +59,33 @@ namespace Laverie.API.Controllers
         }
 
 
+        [HttpPost("addCycle")]
+        public async Task<IActionResult> AddCycle([FromBody] CycleCreationDTO cycle)
+        {
+            try
+            {
+                // Call AddCycleAsync to insert the cycle and get the ID
+                int cycleId = await _configurationService.AddCycle(cycle);
+
+                if (cycleId > 0)
+                {
+                    // If the cycle was successfully created, return the cycle ID
+                    return Ok(new { CycleId = cycleId });
+                }
+                else
+                {
+                    // Return a failure response if cycle insertion failed
+                    return BadRequest("Failed to add the new cycle.");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Return an error response if something goes wrong
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
+
+
 }
