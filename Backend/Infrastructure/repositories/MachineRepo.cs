@@ -16,8 +16,7 @@ namespace Laverie.API.Infrastructure.repositories
         {
             _dbContext = dbContext;
         }
-
-       
+ 
         public List<Machine> GetAll()
         {
             var machines = new List<Machine>();
@@ -38,8 +37,7 @@ namespace Laverie.API.Infrastructure.repositories
             }
             return machines;
         }
-
-        
+ 
         public Machine GetById(int id)
         {
             Machine machine = null;
@@ -61,8 +59,7 @@ namespace Laverie.API.Infrastructure.repositories
             }
             return machine;
         }
-
-      
+ 
         public bool Create(MachineCreationDTO machine)
         {
             try
@@ -70,37 +67,33 @@ namespace Laverie.API.Infrastructure.repositories
                 using (var conn = (MySqlConnection)_dbContext.CreateConnection())
                 {
                     conn.Open();
-
-                    
+ 
+                     
                     MySqlCommand cmd = new MySqlCommand(
                         "INSERT INTO machine (status, type, LaverieId) " +
                         "VALUES (@status, @type, @LaverieId)", conn);
-
-                   
+                     
                     cmd.Parameters.AddWithValue("@status", machine.status);
                     cmd.Parameters.AddWithValue("@type", machine.type);
                     cmd.Parameters.AddWithValue("@LaverieId", machine.LaverieId);
-
-                   
+ 
                     int rowsAffected = cmd.ExecuteNonQuery();
                     return rowsAffected > 0;
                 }
             }
             catch (Exception ex)
-            {
-                
+ 
+            { 
                 throw new Exception($"An error occurred while creating the machine: {ex.Message}", ex);
             }
         }
-
-        
+          
         public bool Update(MachineUpdateDTO machine, int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-
-              
+ 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM machine WHERE id = @id", conn);
                 checkCmd.Parameters.AddWithValue("@id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
@@ -123,25 +116,23 @@ namespace Laverie.API.Infrastructure.repositories
                 return rowsAffected > 0;
             }
         }
-
-    
+ 
         public bool Delete(int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-
-                
+ 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM machine WHERE id = @id", conn);
                 checkCmd.Parameters.AddWithValue("@id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (count == 0)
                 {
-                    return false; 
+ 
+                    return false;  
                 }
-
-              
+  
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM machine WHERE id = @id", conn);
                 cmd.Parameters.AddWithValue("@id", id);
                 int rowsAffected = cmd.ExecuteNonQuery();

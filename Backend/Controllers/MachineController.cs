@@ -17,8 +17,7 @@ namespace Laverie.API.Controllers
         {
             _machineRepo = machineRepo;
         }
-
-       
+ 
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -29,15 +28,14 @@ namespace Laverie.API.Controllers
                 {
                     return NotFound(new { message = "No machines found." });
                 }
-                return Ok(new { message = "Machines retrieved successfully! 🎉", data = machines });
+                return Ok(new { message = "Machines retrieved successfully!", data = machines });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving the machines.", error = ex.Message });
             }
         }
-
-     
+ 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -48,15 +46,14 @@ namespace Laverie.API.Controllers
                 {
                     return NotFound(new { message = $"Machine with ID {id} not found." });
                 }
-                return Ok(new { message = "Machine retrieved successfully! 🎉", data = machine });
+                return Ok(new { message = "Machine retrieved successfully! ", data = machine });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "An error occurred while retrieving the machine.", error = ex.Message });
             }
         }
-
-        
+ 
         [HttpPost("create")]
         public IActionResult Create([FromBody] MachineCreationDTO machine)
         {
@@ -70,7 +67,7 @@ namespace Laverie.API.Controllers
                 var isCreated = _machineRepo.Create(machine);
                 if (isCreated)
                 {
-                    return Ok(new { message = $"Machine of type '{machine.type}' created successfully! 🎉" });
+                    return Ok(new { message = $"Machine of type '{machine.type}' created successfully" });
                 }
                 else
                 {
@@ -82,9 +79,9 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while creating the machine.", error = ex.Message });
             }
         }
-
-        
-        [HttpPut("{id}")]
+ 
+         
+        [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] MachineUpdateDTO machine)
         {
             try
@@ -106,9 +103,10 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the machine.", error = ex.Message });
             }
         }
-
-       
-        [HttpDelete("{id}")]
+ 
+         
+        [HttpDelete("delete/{id}")]
+ 
         public IActionResult Delete(int id)
         {
             try
@@ -116,7 +114,7 @@ namespace Laverie.API.Controllers
                 var isDeleted = _machineRepo.Delete(id);
                 if (isDeleted)
                 {
-                    return Ok(new { message = $"Machine with ID {id} deleted successfully! 🗑️" });
+                    return Ok(new { message = $"Machine with ID {id} deleted successfully!" });
                 }
                 else
                 {

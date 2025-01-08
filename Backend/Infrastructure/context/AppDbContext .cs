@@ -1,7 +1,5 @@
-﻿
+﻿using MySql.Data.MySqlClient;
 using System.Data;
-using MySql.Data.MySqlClient;
-using Microsoft.Extensions.Configuration;
 
 namespace Laverie.API.Infrastructure.context
 {
