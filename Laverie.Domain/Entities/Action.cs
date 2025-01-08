@@ -8,9 +8,9 @@ namespace Laverie.Domain.Entities
 {
     public class Action
     {
-        public int Id { get; set; } // Primary key
-        public int CycleId { get; set; } // Foreign key to Cycle
-        public DateTime StartTime { get; set; } // When the cycle starts
+        public int Id { get; set; } 
+        public int CycleId { get; set; } 
+        public DateTime StartTime { get; set; } 
         
     }
 }

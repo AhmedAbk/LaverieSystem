@@ -55,11 +55,12 @@ namespace Laverie.SimulationApp.Services
         public async Task<bool> StartMachineStateAsync(int machineId, int idCycle)
         {
             try
+ 
             { 
                 string url = $"api/Configuration/startMachine";
                  
                 var requestBody = new { MachineId = machineId, IdCycle = idCycle };
-                 
+            
                 var response = await _httpClient.PostAsJsonAsync(url, requestBody);
 
                 if (response.IsSuccessStatusCode)
@@ -113,27 +114,26 @@ namespace Laverie.SimulationApp.Services
         {
             try
             {
-                // Construct the URL to call the backend API for adding a cycle
-                string url = "api/Configuration/addCycle"; // Adjust this URL based on your API route
+ 
+               
+                string url = "api/Configuration/addCycle"; 
 
-                // Send a POST request to insert the cycle with the provided cycle object
                 var response = await _httpClient.PostAsJsonAsync(url, cycle);
 
-                // If the response is successful, read the content (cycle ID) from the response body
                 var responseBody = await response.Content.ReadAsStringAsync();
 
-                // Deserialize the response to get the CycleId
                 var responseData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseBody);
 
-                // Check if cycleId exists and convert it from string (or number)
+ 
                 if (responseData != null && responseData.ContainsKey("cycleId"))
                 {
                     var cycleIdElement = responseData["cycleId"];
 
-                    // Try parsing the cycleId as an integer, handle both string and integer cases
+ 
                     if (cycleIdElement.ValueKind == JsonValueKind.String)
                     {
-                        // If cycleId is a string, attempt to parse it
+
+ 
                         if (int.TryParse(cycleIdElement.GetString(), out int cycleId))
                         {
                             Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
@@ -142,7 +142,7 @@ namespace Laverie.SimulationApp.Services
                     }
                     else if (cycleIdElement.ValueKind == JsonValueKind.Number)
                     {
-                        // If cycleId is a number, directly cast it
+ 
                         int cycleId = cycleIdElement.GetInt32();
                         Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
                         return cycleId;
@@ -150,12 +150,16 @@ namespace Laverie.SimulationApp.Services
                 }
 
                 Console.WriteLine("Failed to add the cycle.");
-                return 0; // Return 0 if cycleId is not found or can't be parsed
+ 
+                return 0; 
+ 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while adding the cycle: {ex.Message}");
-                return 0; // Return 0 if an error occurs
+ 
+                return 0;
+ 
             }
         }
 

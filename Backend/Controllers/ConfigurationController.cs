@@ -17,7 +17,7 @@ namespace Laverie.API.Controllers
         {
             _configurationService = configurationService;
         }
-         
+
         [HttpGet]
         public async Task<ActionResult<List<User>>> GetConfiguration()
         {
@@ -63,23 +63,27 @@ namespace Laverie.API.Controllers
         {
             try
             {
-                // Call AddCycleAsync to insert the cycle and get the ID
+ 
+               
                 int cycleId = await _configurationService.AddCycle(cycle);
 
                 if (cycleId > 0)
                 {
-                    // If the cycle was successfully created, return the cycle ID
+ 
+                    
                     return Ok(new { CycleId = cycleId });
                 }
                 else
                 {
-                    // Return a failure response if cycle insertion failed
+ 
+                    
                     return BadRequest("Failed to add the new cycle.");
                 }
             }
             catch (Exception ex)
             {
-                // Return an error response if something goes wrong
+ 
+               
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

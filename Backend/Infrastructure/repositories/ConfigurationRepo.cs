@@ -264,35 +264,39 @@ public class ConfigurationRepo
             {
                 try
                 {
-                    // Insert the cycle
+ 
                     string insertCycleQuery = @"
                     INSERT INTO cycle (Price, MachineId, CycleDuration) 
                     VALUES (@Price, @MachineId, @CycleDuration);
-                    SELECT LAST_INSERT_ID();"; // This returns the last inserted ID
-
+                    SELECT LAST_INSERT_ID();"; 
+ 
                     using (var insertCycleCommand = new MySqlCommand(insertCycleQuery, connection, transaction))
                     {
                         insertCycleCommand.Parameters.AddWithValue("@Price", cycle.price);
                         insertCycleCommand.Parameters.AddWithValue("@MachineId", cycle.machineId);
                         insertCycleCommand.Parameters.AddWithValue("@CycleDuration", cycle.cycleDuration);
 
-                        // Execute the insert query and retrieve the last inserted ID
+ 
                         int cycleId = Convert.ToInt32(await insertCycleCommand.ExecuteScalarAsync());
 
                         if (cycleId > 0)
                         {
-                            await transaction.CommitAsync(); // Commit the transaction
-                            return cycleId; // Return the ID of the inserted cycle
+ 
+                            await transaction.CommitAsync();
+                            return cycleId;
                         }
 
-                        await transaction.RollbackAsync(); // Rollback if no rows were inserted
-                        return 0; // Return 0 if insertion failed
+                        await transaction.RollbackAsync(); 
+                        return 0; 
+ 
                     }
                 }
                 catch (Exception)
                 {
-                    await transaction.RollbackAsync(); // Rollback on exception
-                    throw; // Re-throw the exception to handle it upstream
+ 
+                    await transaction.RollbackAsync(); 
+                    throw;
+ 
                 }
             }
         }
