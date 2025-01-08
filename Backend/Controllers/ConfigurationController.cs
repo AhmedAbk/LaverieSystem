@@ -17,7 +17,7 @@ namespace Laverie.API.Controllers
         {
             _configurationService = configurationService;
         }
-         
+
         [HttpGet]
         public async Task<ActionResult<List<User>>> GetConfiguration()
         {
@@ -43,6 +43,7 @@ namespace Laverie.API.Controllers
             return Ok(new { Message = "Machine status toggled successfully." });
         }
 
+
         [HttpPost("stopMachine")]
         public async Task<IActionResult> StopMachine([FromBody] int machineId)
         {
@@ -57,5 +58,33 @@ namespace Laverie.API.Controllers
         }
 
 
+        [HttpPost("addCycle")]
+        public async Task<IActionResult> AddCycle([FromBody] CycleCreationDTO cycle)
+        {
+            try
+            {
+               
+                int cycleId = await _configurationService.AddCycle(cycle);
+
+                if (cycleId > 0)
+                {
+                    
+                    return Ok(new { CycleId = cycleId });
+                }
+                else
+                {
+                    
+                    return BadRequest("Failed to add the new cycle.");
+                }
+            }
+            catch (Exception ex)
+            {
+               
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
+
+
 }

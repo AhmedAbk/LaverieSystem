@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Laverie.Domain.Entities;
 using Laverie.API.Infrastructure.context;
 using MySql.Data.MySqlClient;
+using Laverie.Domain.DTOS;
+using Microsoft.AspNetCore.Mvc;
 
 public class ConfigurationRepo
 {
@@ -213,7 +215,6 @@ public class ConfigurationRepo
             }
         }
     }
-
     public async Task<bool> StopMachine(int MachineId)
     {
         using (var connection = (MySqlConnection)_dbContext.CreateConnection())
@@ -253,4 +254,49 @@ public class ConfigurationRepo
             }
         }
     }
+
+    public async Task<int> AddCycleAsync(CycleCreationDTO cycle)
+    {
+        using (var connection = (MySqlConnection)_dbContext.CreateConnection())
+        {
+            await connection.OpenAsync();
+            using (var transaction = await connection.BeginTransactionAsync())
+            {
+                try
+                {
+                    
+                    string insertCycleQuery = @"
+                    INSERT INTO cycle (Price, MachineId, CycleDuration) 
+                    VALUES (@Price, @MachineId, @CycleDuration);
+                    SELECT LAST_INSERT_ID();"; 
+
+                    using (var insertCycleCommand = new MySqlCommand(insertCycleQuery, connection, transaction))
+                    {
+                        insertCycleCommand.Parameters.AddWithValue("@Price", cycle.price);
+                        insertCycleCommand.Parameters.AddWithValue("@MachineId", cycle.machineId);
+                        insertCycleCommand.Parameters.AddWithValue("@CycleDuration", cycle.cycleDuration);
+
+                        
+                        int cycleId = Convert.ToInt32(await insertCycleCommand.ExecuteScalarAsync());
+
+                        if (cycleId > 0)
+                        {
+                            await transaction.CommitAsync();
+                            return cycleId;
+                        }
+
+                        await transaction.RollbackAsync(); 
+                        return 0; 
+                    }
+                }
+                catch (Exception)
+                {
+                    await transaction.RollbackAsync(); 
+                    throw;
+                }
+            }
+        }
+    }
+
+
 }

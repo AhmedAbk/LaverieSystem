@@ -17,7 +17,7 @@ namespace Laverie.API.Controllers
         {
             _machineRepo = machineRepo;
         }
-         
+ 
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -35,7 +35,7 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the machines.", error = ex.Message });
             }
         }
-         
+ 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -53,7 +53,7 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving the machine.", error = ex.Message });
             }
         }
-         
+ 
         [HttpPost("create")]
         public IActionResult Create([FromBody] MachineCreationDTO machine)
         {
@@ -79,6 +79,7 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while creating the machine.", error = ex.Message });
             }
         }
+ 
          
         [HttpPut("update/{id}")]
         public IActionResult Update(int id, [FromBody] MachineUpdateDTO machine)
@@ -102,8 +103,10 @@ namespace Laverie.API.Controllers
                 return StatusCode(500, new { message = "An error occurred while updating the machine.", error = ex.Message });
             }
         }
+ 
          
         [HttpDelete("delete/{id}")]
+ 
         public IActionResult Delete(int id)
         {
             try

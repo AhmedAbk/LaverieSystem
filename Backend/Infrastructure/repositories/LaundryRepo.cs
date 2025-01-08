@@ -15,7 +15,7 @@ namespace Laverie.API.Infrastructure.repositories
         {
             _dbContext = dbContext;
         }
-         
+ 
         public List<Laundry> GetAll()
         {
             var laundries = new List<Laundry>();
@@ -39,7 +39,7 @@ namespace Laverie.API.Infrastructure.repositories
             }
             return laundries;
         }
-         
+ 
         public Laundry GetById(int id)
         {
             Laundry laundry = null;
@@ -72,46 +72,48 @@ namespace Laverie.API.Infrastructure.repositories
                 using (var conn = (MySqlConnection)_dbContext.CreateConnection())
                 {
                     conn.Open();
-                     
+ 
                     MySqlCommand cmd = new MySqlCommand(
                         " INSERT INTO laverie " +
                         " (NomLaverie, Address, Latitude, ProprietaireId," +
                         " Longitude, Services) " +
                         " VALUES (@NomLaverie, @Address, @Latitude, @ProprietaireId," +
                         " @Longitude, @Services)", conn);
-                     
+ 
                     cmd.Parameters.AddWithValue("@NomLaverie", laundry.nomLaverie);
                     cmd.Parameters.AddWithValue("@Address", laundry.address);
                     cmd.Parameters.AddWithValue("@Latitude", laundry.Latitude);
                     cmd.Parameters.AddWithValue("@ProprietaireId", laundry.ProprietaireId);
                     cmd.Parameters.AddWithValue("@Longitude", laundry.Longitude);
                     cmd.Parameters.AddWithValue("@Services", string.Join(",", laundry.Services));
-                     
+ 
                     int rowsAffected = cmd.ExecuteNonQuery();
                     return rowsAffected > 0 ;
                 }
             }
             catch (Exception ex)
+ 
             { 
                 throw new Exception($"An error occurred while creating the laundry: {ex.Message}", ex);
             }
         }
-         
+          
         public bool Update(LaundryUpdateDTO laundry, int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-                 
+ 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
                 checkCmd.Parameters.AddWithValue("@Id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (count == 0)
                 {
+ 
                     return false;  
                 }
-                 
+              
                 MySqlCommand cmd = new MySqlCommand(
                     "UPDATE laverie SET NomLaverie = @NomLaverie, Address = @Address," +
                     " Latitude = @Latitude, Longitude = @Longitude, Services = @Services " +
@@ -128,22 +130,23 @@ namespace Laverie.API.Infrastructure.repositories
                 return rowsAffected > 0;
             }
         }
-         
+ 
         public bool Delete(int id)
         {
             using (var conn = (MySqlConnection)_dbContext.CreateConnection())
             {
                 conn.Open();
-                 
+ 
                 MySqlCommand checkCmd = new MySqlCommand("SELECT COUNT(*) FROM laverie WHERE Id = @Id", conn);
                 checkCmd.Parameters.AddWithValue("@Id", id);
                 int count = Convert.ToInt32(checkCmd.ExecuteScalar());
 
                 if (count == 0)
                 {
+ 
                     return false;  
                 }
-                 
+                  
                 MySqlCommand cmd = new MySqlCommand("DELETE FROM laverie WHERE Id = @Id", conn);
                 cmd.Parameters.AddWithValue("@Id", id);
                 int rowsAffected = cmd.ExecuteNonQuery();

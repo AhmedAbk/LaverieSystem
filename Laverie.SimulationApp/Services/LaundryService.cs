@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Laverie.Domain.Entities;
 using System.Net.Http.Json;
 using System.Transactions;
+using Laverie.Domain.DTOS;
 
 namespace Laverie.SimulationApp.Services
 {
@@ -54,11 +55,12 @@ namespace Laverie.SimulationApp.Services
         public async Task<bool> StartMachineStateAsync(int machineId, int idCycle)
         {
             try
+ 
             { 
                 string url = $"api/Configuration/startMachine";
                  
                 var requestBody = new { MachineId = machineId, IdCycle = idCycle };
-                 
+            
                 var response = await _httpClient.PostAsJsonAsync(url, requestBody);
 
                 if (response.IsSuccessStatusCode)
@@ -107,6 +109,52 @@ namespace Laverie.SimulationApp.Services
                 return false;
             }
         }
+
+        public async Task<int> AddCycleAsync(CycleCreationDTO cycle)
+        {
+            try
+            {
+               
+                string url = "api/Configuration/addCycle"; 
+
+                var response = await _httpClient.PostAsJsonAsync(url, cycle);
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                var responseData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseBody);
+
+                if (responseData != null && responseData.ContainsKey("cycleId"))
+                {
+                    var cycleIdElement = responseData["cycleId"];
+
+                    if (cycleIdElement.ValueKind == JsonValueKind.String)
+                    {
+
+                        if (int.TryParse(cycleIdElement.GetString(), out int cycleId))
+                        {
+                            Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
+                            return cycleId;
+                        }
+                    }
+                    else if (cycleIdElement.ValueKind == JsonValueKind.Number)
+                    {
+
+                        int cycleId = cycleIdElement.GetInt32();
+                        Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
+                        return cycleId;
+                    }
+                }
+
+                Console.WriteLine("Failed to add the cycle.");
+                return 0; 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while adding the cycle: {ex.Message}");
+                return 0;
+            }
+        }
+
 
 
     }

@@ -53,7 +53,7 @@ namespace Laverie.API.Controllers
             }
             catch (Exception ex)
             {
-                // Return 400 Bad Request with error details
+                
                 return BadRequest(new
                 {
                     message = "Failed to create user.",
