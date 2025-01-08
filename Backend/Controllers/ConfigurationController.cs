@@ -63,22 +63,26 @@ namespace Laverie.API.Controllers
         {
             try
             {
+ 
                
                 int cycleId = await _configurationService.AddCycle(cycle);
 
                 if (cycleId > 0)
                 {
+ 
                     
                     return Ok(new { CycleId = cycleId });
                 }
                 else
                 {
+ 
                     
                     return BadRequest("Failed to add the new cycle.");
                 }
             }
             catch (Exception ex)
             {
+ 
                
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }

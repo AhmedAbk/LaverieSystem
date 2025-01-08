@@ -264,35 +264,39 @@ public class ConfigurationRepo
             {
                 try
                 {
-                    
+ 
                     string insertCycleQuery = @"
                     INSERT INTO cycle (Price, MachineId, CycleDuration) 
                     VALUES (@Price, @MachineId, @CycleDuration);
                     SELECT LAST_INSERT_ID();"; 
-
+ 
                     using (var insertCycleCommand = new MySqlCommand(insertCycleQuery, connection, transaction))
                     {
                         insertCycleCommand.Parameters.AddWithValue("@Price", cycle.price);
                         insertCycleCommand.Parameters.AddWithValue("@MachineId", cycle.machineId);
                         insertCycleCommand.Parameters.AddWithValue("@CycleDuration", cycle.cycleDuration);
 
-                        
+ 
                         int cycleId = Convert.ToInt32(await insertCycleCommand.ExecuteScalarAsync());
 
                         if (cycleId > 0)
                         {
+ 
                             await transaction.CommitAsync();
                             return cycleId;
                         }
 
                         await transaction.RollbackAsync(); 
                         return 0; 
+ 
                     }
                 }
                 catch (Exception)
                 {
+ 
                     await transaction.RollbackAsync(); 
                     throw;
+ 
                 }
             }
         }

@@ -114,6 +114,7 @@ namespace Laverie.SimulationApp.Services
         {
             try
             {
+ 
                
                 string url = "api/Configuration/addCycle"; 
 
@@ -123,13 +124,16 @@ namespace Laverie.SimulationApp.Services
 
                 var responseData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseBody);
 
+ 
                 if (responseData != null && responseData.ContainsKey("cycleId"))
                 {
                     var cycleIdElement = responseData["cycleId"];
 
+ 
                     if (cycleIdElement.ValueKind == JsonValueKind.String)
                     {
 
+ 
                         if (int.TryParse(cycleIdElement.GetString(), out int cycleId))
                         {
                             Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
@@ -138,7 +142,7 @@ namespace Laverie.SimulationApp.Services
                     }
                     else if (cycleIdElement.ValueKind == JsonValueKind.Number)
                     {
-
+ 
                         int cycleId = cycleIdElement.GetInt32();
                         Console.WriteLine($"Cycle added successfully. Cycle ID: {cycleId}");
                         return cycleId;
@@ -146,12 +150,16 @@ namespace Laverie.SimulationApp.Services
                 }
 
                 Console.WriteLine("Failed to add the cycle.");
+ 
                 return 0; 
+ 
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while adding the cycle: {ex.Message}");
+ 
                 return 0;
+ 
             }
         }
 

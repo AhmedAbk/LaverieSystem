@@ -179,7 +179,7 @@ namespace LaverieConsoleApp
                         {
                             
 
-                            
+ 
                             Console.Write("\nEnter cycle duration: ");
                             string? duration = Console.ReadLine();
 
@@ -191,7 +191,7 @@ namespace LaverieConsoleApp
                                 return;
                             }
 
-                            
+ 
                             var newCycle = new CycleCreationDTO
                             {
                                 machineId = selectedMachine.id,
@@ -199,7 +199,7 @@ namespace LaverieConsoleApp
                                 price = price
                             };
 
-                            
+ 
                             int createdCycleId = await _laundryService.AddCycleAsync(newCycle);
 
                             if (createdCycleId > 0)
@@ -207,7 +207,7 @@ namespace LaverieConsoleApp
                                 Console.WriteLine("\nNew cycle added successfully!");
                                 Console.WriteLine($"Duration: {newCycle.cycleDuration}, Price: {newCycle.price}");
 
-                                
+
                                 Console.WriteLine("\nOptions:\n1. Start Machine \n2. Stop Machine");
                                 Console.Write("Select an option: ");
                                 var option = Console.ReadLine();
@@ -215,12 +215,12 @@ namespace LaverieConsoleApp
                                 switch (option)
                                 {
                                     case "1":
-                                        
+ 
                                         await _laundryService.StartMachineStateAsync(selectedMachine.id, createdCycleId);
                                         StartCycleTimer(newCycle.cycleDuration, newCycle.machineId);
                                         break;
                                     case "2":
-                                       
+ 
                                         await _laundryService.StopMachineStateAsync(selectedMachine.id);
                                         break;
                                     default:
@@ -255,7 +255,7 @@ namespace LaverieConsoleApp
 
         static void StartCycleTimer(string duration, int machineId)
         {
-            
+ 
             if (int.TryParse(duration, out int cycleDurationSecs))
             {
                 
@@ -268,7 +268,9 @@ namespace LaverieConsoleApp
                     {
                         timer.Stop(); 
                         Console.WriteLine("Cycle completed. Stopping the machine...");
+ 
                         await _laundryService.StopMachineStateAsync(machineId); 
+ 
                     }
                     else
                     {
